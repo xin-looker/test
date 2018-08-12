@@ -17,3 +17,10 @@ include: "*.view.lkml"         # include all views in this project
 #     sql_on: ${users.id} = ${orders.user_id} ;;
 #   }
 # }
+explore: donations {
+#   join: donors {
+#     type: left_outer
+#     sql_on: ${donations.donor_id}=${donors.donor_id} ;;
+#     relationship: many_to_one
+#   }
+}

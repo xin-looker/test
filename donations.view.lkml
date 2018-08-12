@@ -29,6 +29,7 @@ view: donations {
       year
     ]
     sql: ${TABLE}.Donation_Received_Date ;;
+    convert_tz: yes
   }
 
   dimension: donor_cart_sequence {

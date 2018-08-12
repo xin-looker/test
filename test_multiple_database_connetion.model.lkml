@@ -10,12 +10,6 @@ datagroup: test_multiple_database_connetion_default_datagroup {
 
 persist_with: test_multiple_database_connetion_default_datagroup
 
-explore: donations {
-  join: donors {
-    type: left_outer
-    sql_on: ${donations.donor_id}=${donors.donor_id} ;;
-    relationship: many_to_one
-  }
-}
+
 
 explore: donors {}
