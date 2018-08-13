@@ -8,7 +8,7 @@ datagroup: test_multiple_database_connetion_default_datagroup {
   max_cache_age: "1 hour"
 }
 
-persist_with: test_multiple_database_connetion_default_datagroup
+# persist_with: test_multiple_database_connetion_default_datagroup
 
 
 

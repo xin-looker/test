@@ -1,5 +1,5 @@
 view: donors {
-  sql_table_name: donorschoose_test.donors ;;
+  sql_table_name: `luminous-style-213120.donorschoose_test.donors` ;;
 
   dimension: donor_id {
     primary_key: yes

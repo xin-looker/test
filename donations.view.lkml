@@ -1,5 +1,5 @@
 view: donations {
-  sql_table_name: donorschoose.donations ;;
+  sql_table_name: `donorschoose-data-analytics.donorschoose.donations` ;;
 
   dimension: donation_id {
     primary_key: yes

@@ -18,9 +18,9 @@ include: "*.view.lkml"         # include all views in this project
 #   }
 # }
 explore: donations {
-#   join: donors {
-#     type: left_outer
-#     sql_on: ${donations.donor_id}=${donors.donor_id} ;;
-#     relationship: many_to_one
-#   }
+  join: donors {
+    type: left_outer
+    sql_on: ${donations.donor_id}=${donors.donor_id} ;;
+    relationship: many_to_one
+  }
 }
