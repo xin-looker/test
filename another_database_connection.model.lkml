@@ -18,6 +18,10 @@ include: "*.view.lkml"         # include all views in this project
 #   }
 # }
 explore: donations {
+  access_filter: {
+    field: project_id
+    user_attribute: id
+  }
   join: donors {
     type: left_outer
     sql_on: ${donations.donor_id}=${donors.donor_id} ;;
