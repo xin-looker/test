@@ -42,6 +42,14 @@ view: donations {
     sql: ${TABLE}.Donor_ID ;;
   }
 
+  dimension: project_id_mdf {
+    type: string
+#     sql: ${TABLE}.Project_ID ;;
+    sql: if(( '{{ (_user_attributes['first_name']) }}'= 'Xin' OR '{{ (_user_attributes['last_name']) }}' = 'Xin'), CAST(${TABLE}.project_id AS STRING), '123' );;
+  }
+
+
+
   dimension: project_id {
     type: string
     sql: ${TABLE}.Project_ID ;;
