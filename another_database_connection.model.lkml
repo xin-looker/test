@@ -25,7 +25,7 @@ explore: donations {
 
   access_filter: {
     field: project_id
-    user_attribute: google_user_id
+    user_attribute: test_id_attributes
   }
 
   join: donors {
