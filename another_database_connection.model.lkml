@@ -22,6 +22,12 @@ explore: donations {
     field: project_id
     user_attribute: id
   }
+
+  access_filter: {
+    field: project_id
+    user_attribute: google_user_id
+  }
+
   join: donors {
     type: left_outer
     sql_on: ${donations.donor_id}=${donors.donor_id} ;;
