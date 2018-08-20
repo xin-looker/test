@@ -7,9 +7,10 @@ view: donations {
     sql: ${TABLE}.Donation_ID ;;
   }
 
-  dimension: donation_amount {
-    type: number
+  measure: donation_amount {
+    type: sum
     sql: ${TABLE}.Donation_Amount ;;
+#     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
   }
 
   dimension: donation_included_optional_donation {
@@ -40,6 +41,11 @@ view: donations {
   dimension: donor_id {
     type: string
     sql: ${TABLE}.Donor_ID ;;
+    link: {
+      label: "hello"
+      url: "http://www.google.com/search?q={{ value }}&f[donations.donation_included_optional_donation]={{ _filters['donations.donation_included_optional_donation'] || yes }}
+      &f[donations.donor_id]={{ donations.donation_included_optional_donation._rendered_value}}"
+    }
   }
 
   dimension: project_id_mdf {
