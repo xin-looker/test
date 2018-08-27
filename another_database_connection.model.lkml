@@ -18,19 +18,46 @@ include: "*.view.lkml"         # include all views in this project
 #   }
 # }
 explore: donations {
-#   access_filter: {
-#     field: project_id
-#     user_attribute: id
-#   }
-#
-#   access_filter: {
-#     field: project_id
-#     user_attribute: test_id_attributes
-#   }
-
   join: donors {
     type: left_outer
     sql_on: ${donations.donor_id}=${donors.donor_id} ;;
     relationship: many_to_one
   }
 }
+
+explore: donors {
+  join: test2 {
+    from: test1
+    sql_on: ${donors.donor_id}=${test2.donors_donor_id} ;;
+    sql_where: ${test2.donors_donor_state} = 'California';;
+    relationship: one_to_one
+  }
+
+  join: test3 {
+    from: test1
+    sql_on: ${donors.donor_id}=${test3.donors_donor_id} ;;
+    sql_where:  ${test3.donations_donation_included_optional_donation} = 'Yes' ;;
+    relationship: one_to_one
+  }
+}
+
+explore: pdtwithparam {
+  view_name: donations
+  from: donations
+  extends: [donations]
+  join: pdtwithparam {
+    sql_on: ${donations.donation_id}=${pdtwithparam.donations_donation_id} ;;
+    relationship: one_to_one
+  }
+}
+
+explore: test1 {}
+
+explore: test_onpeak {
+  join: donorid {
+    relationship: one_to_one
+    sql_on: ${test_onpeak.donors_donor_id}=${donorid.donor_id};;
+  }
+}
+
+explore: donorid {}

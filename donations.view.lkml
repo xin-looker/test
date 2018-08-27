@@ -16,6 +16,10 @@ view: donations {
   dimension: donation_included_optional_donation {
     type: yesno
     sql: ${TABLE}.Donation_Included_Optional_Donation ;;
+    link: {
+      label: "test"
+      url: "https://dcleu.eu.looker.com/looks/57?&f[donors.donor_state]={{ _filters['donors.donor_state'] | url_encode }}&f[donations.donation_included_optional_donation]={{donations.donation_included_optional_donation._value}}"
+    }
   }
 
   dimension_group: donation_received {
