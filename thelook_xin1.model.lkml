@@ -3,16 +3,52 @@ connection: "thelook"
 # include all the views
 include: "*.view"
 include: "test.dashboard"
+include: "test.model"
 
 datagroup: thelook_xin1_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
-  max_cache_age: "1 hour"
+  max_cache_age: "6 hour"
 }
 
-persist_with: thelook_xin1_default_datagroup
+case_sensitive: no
 
+access_grant: user_age {
+  allowed_values: ["abc"]
+  user_attribute: advanced_string
+}
+
+map_layer: us_counties {
+  url: "https://raw.githubusercontent.com/deldersveld/topojson/master/countries/united-states/us-albers-counties.json"
+#   format: topojson
+#   feature_key: "geometries"
+  property_key: "name"
+#   min_zoom_level: 100
+#   projection: albers
+}
+
+test: userview {
+  explore_source: users {
+    column: user_count {
+      field: users.count
+    }
+    expression_custom_filter: ${users.gender}="m";;
+  }
+  assert: over5000 {
+    expression: ${users.count}<7000;;
+  }
+}
+
+explore: test_filter {
+  always_filter: {
+    filters: {
+      field: date_temp
+      value: "today"
+    }
+  }
+}
 
 explore: events {
+  persist_with: thelook_xin1_default_datagroup
   join: users {
     type: left_outer
     sql_on: ${events.user_id} = ${users.id} ;;
@@ -55,9 +91,14 @@ explore: order_items {
 }
 
 explore: orders {
+#   always_filter: {
+#     filters: {
+#       field: dynamic_date_param
+#     }
+#   }
   join: users {
     type: left_outer
-    sql_on: ${orders.user_id} = ${users.id} ;;
+    sql: ${orders.user_id} = ${users.id} ;;
     relationship: many_to_one
   }
 }
@@ -74,6 +115,17 @@ explore: user_data {
   }
 }
 
-explore: users {}
+explore: users {
+  label: "user stats"
+#   join: fips {
+#     relationship: many_to_one
+#     sql_on: ${users.city}=${fips.name} ;;
+#   }
+  join: user_2 {
+    fields: [user_2.count_distinct_30days_ago]
+    type: left_outer
+    sql_on: date_add(${user_2.created_date}, interval 30 day)=${users.created_date} ;;
+  }
+}
 
 explore: users_nn {}
