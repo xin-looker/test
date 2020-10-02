@@ -203,6 +203,7 @@ view: users {
   dimension: state {
     type: string
     sql: ${TABLE}.state ;;
+    tags: ["segment_group_id"]
   }
 
   dimension: zip {
