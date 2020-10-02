@@ -3,7 +3,6 @@ connection: "thelook"
 # include all the views
 include: "*.view"
 include: "test.dashboard"
-include: "test.model"
 
 datagroup: thelook_xin1_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
@@ -98,7 +97,7 @@ explore: orders {
 #   }
   join: users {
     type: left_outer
-    sql: ${orders.user_id} = ${users.id} ;;
+    sql_on: ${orders.user_id} = ${users.id} ;;
     relationship: many_to_one
   }
 }
@@ -116,16 +115,16 @@ explore: user_data {
 }
 
 explore: users {
-  label: "user stats"
-#   join: fips {
-#     relationship: many_to_one
-#     sql_on: ${users.city}=${fips.name} ;;
-#   }
-  join: user_2 {
-    fields: [user_2.count_distinct_30days_ago]
-    type: left_outer
-    sql_on: date_add(${user_2.created_date}, interval 30 day)=${users.created_date} ;;
-  }
+
+  # join: fips {
+  #   relationship: many_to_one
+  #   sql_on: ${users.city}=${fips.name} ;;
+  # }
+  # join: user_2 {
+  #   fields: [user_2.count_distinct_30days_ago]
+  #   type: left_outer
+  #   sql_on: date_add(${user_2.created_date}, interval 30 day)=${users.created_date} ;;
+  # }
 }
 
 explore: users_nn {}

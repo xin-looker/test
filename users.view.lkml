@@ -11,6 +11,33 @@ view: users {
     type: date
   }
 
+  parameter: attri {
+    type: string
+    allowed_value: {
+      label: "first_name"
+      value: "first_name"
+    }
+    allowed_value: {
+      label: "last_name"
+      value: "last_name"
+    }
+  }
+
+  dimension: max_user_created_date {
+    type: string
+    sql: (select max(${created_date}) from demo_db.users) ;;
+  }
+
+  dimension: test_suggest_liquid {
+    type: string
+    sql: {% if attri._parameter_value == "'first_name'" %}
+    ${first_name}
+    {% else %}
+    ${last_name}
+    {% endif %};;
+    suggest_persist_for: "0 seconds"
+  }
+
   dimension: static_sql {
     type: string
     sql: 'case when age>20 then \'hello 20\' else @variable end' ;;
@@ -32,6 +59,45 @@ view: users {
     label: "user_age"
 #     required_access_grants: [user_age]
     sql: ${TABLE}.age ;;
+    html: <video width="560" height="315" controls="controls" class="video-stream" x-webkit-airplay="allow" src="https://www.youtube.com/jFeBaV2hFb4">
+</video> ;;
+    # html: <iframe width="420" height="315"
+    # src="https://www.youtube.com/embed/tgbNymZ7vqY?autoplay=1&mute=1">
+    # </iframe> ;;
+  }
+
+  dimension: age_50 {
+    type: yesno
+    sql: ${age}>50 ;;
+  }
+
+  dimension: yesno_icon {
+    type: string
+    sql: ${gender} ;;
+    html: <div style="border: solid 1px #4285F4; border-radius: 5px; padding: 5px 10px; background: #eaf1fe; height: 200px; text-align: center; margin-bottom: 10px;">
+  <div>
+    <img style="height: 60px; margin-top: 30px;" src="https://looker.com/assets/img/images/logos/looker_black.svg"/>
+    <h1 style="font-size: 28px;">Business Pulse</h1>
+  </div>
+<nav style="font-size: 18px; position: absolute; bottom: 0; text-align: center;">
+  <a style="padding: 5px; line-height: 40px; font-weight: bold;" href="#home">
+    <svg style="height: 16px; fill: #4285F4;" class="svg-icon" viewBox="0 0 20 20">
+              <path d="M17.431,2.156h-3.715c-0.228,0-0.413,0.186-0.413,0.413v6.973h-2.89V6.687c0-0.229-0.186-0.413-0.413-0.413H6.285c-0.228,0-0.413,0.184-0.413,0.413v6.388H2.569c-0.227,0-0.413,0.187-0.413,0.413v3.942c0,0.228,0.186,0.413,0.413,0.413h14.862c0.228,0,0.413-0.186,0.413-0.413V2.569C17.844,2.342,17.658,2.156,17.431,2.156 M5.872,17.019h-2.89v-3.117h2.89V17.019zM9.587,17.019h-2.89V7.1h2.89V17.019z M13.303,17.019h-2.89v-6.651h2.89V17.019z M17.019,17.019h-2.891V2.982h2.891V17.019z"></path>
+            </svg>
+          Pulse</a>
+  <a style="padding: 5px; line-height: 40px;" href="#news">
+    <svg style="height: 16px; fill: #4285F4;" class="svg-icon" viewBox="0 0 20 20">
+              <path d="M12.075,10.812c1.358-0.853,2.242-2.507,2.242-4.037c0-2.181-1.795-4.618-4.198-4.618S5.921,4.594,5.921,6.775c0,1.53,0.884,3.185,2.242,4.037c-3.222,0.865-5.6,3.807-5.6,7.298c0,0.23,0.189,0.42,0.42,0.42h14.273c0.23,0,0.42-0.189,0.42-0.42C17.676,14.619,15.297,11.677,12.075,10.812 M6.761,6.775c0-2.162,1.773-3.778,3.358-3.778s3.359,1.616,3.359,3.778c0,2.162-1.774,3.778-3.359,3.778S6.761,8.937,6.761,6.775 M3.415,17.69c0.218-3.51,3.142-6.297,6.704-6.297c3.562,0,6.486,2.787,6.705,6.297H3.415z"></path>
+            </svg>
+          Demographics</a>
+  <a style="padding: 5px; line-height: 40px;" href="#contact">
+  <svg  style="height: 16px; fill: #4285F4;" class="svg-icon" viewBox="0 0 20 20">
+              <path d="M17.237,3.056H2.93c-0.694,0-1.263,0.568-1.263,1.263v8.837c0,0.694,0.568,1.263,1.263,1.263h4.629v0.879c-0.015,0.086-0.183,0.306-0.273,0.423c-0.223,0.293-0.455,0.592-0.293,0.92c0.07,0.139,0.226,0.303,0.577,0.303h4.819c0.208,0,0.696,0,0.862-0.379c0.162-0.37-0.124-0.682-0.374-0.955c-0.089-0.097-0.231-0.252-0.268-0.328v-0.862h4.629c0.694,0,1.263-0.568,1.263-1.263V4.319C18.5,3.625,17.932,3.056,17.237,3.056 M8.053,16.102C8.232,15.862,8.4,15.597,8.4,15.309v-0.89h3.366v0.89c0,0.303,0.211,0.562,0.419,0.793H8.053z M17.658,13.156c0,0.228-0.193,0.421-0.421,0.421H2.93c-0.228,0-0.421-0.193-0.421-0.421v-1.263h15.149V13.156z M17.658,11.052H2.509V4.319c0-0.228,0.193-0.421,0.421-0.421h14.308c0.228,0,0.421,0.193,0.421,0.421V11.052z"></path>
+            </svg>
+          Web Analytics</a>
+</nav>
+</div>;;
+
   }
 
   dimension: email_yesno {
@@ -46,7 +112,6 @@ view: users {
 
   dimension: city {
     type: string
-    map_layer_name: us_counties
     sql: ${TABLE}.city ;;
   }
 
@@ -91,6 +156,11 @@ view: users {
       year
     ]
     sql: ${TABLE}.created_at ;;
+  }
+
+  dimension: last_day_of_month {
+    type: yesno
+    sql: ${created_date}=last_day(${created_date}) ;;
   }
 
   measure: max_date {
@@ -148,10 +218,6 @@ view: users {
   measure: count {
     type: count
     drill_fields: [detail*]
-#     html: {% if value == count_distinct._value %}
-#     <div style="background-color:yellow">{{rendered_value}}</div>
-#     {% endif %};;
-
 
 
 #     link: {

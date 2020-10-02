@@ -1,5 +1,5 @@
 view: orders {
-  sql_table_name: demo_db.orders ;;
+  sql_table_name: (select * from demo_db.orders) ;;
 
   dimension: id {
     primary_key: yes
@@ -16,17 +16,11 @@ view: orders {
 
   }
 
-  dimension: created_year_styled {
-    type: date_year
-    sql: ${created_date} ;;
-    html: {% if value == 2019 %}
-    <p>this year</p>
-    {% else %}
-    {{value}}
-    {% endif %};;
+  filter: gender_filter {
+    type: string
   }
 
-  dimension_group: created_hahahah {
+  dimension_group: created {
     type: time
 #     timeframes: [
 #       raw,
@@ -37,7 +31,7 @@ view: orders {
 #       quarter,
 #       year
 #     ]
-    sql: date_add(${TABLE}.created_at, interval 7 year) ;;
+    sql: date_add(${TABLE}.created_at, interval 3 year) ;;
 #     html: {% if created_day_of_week_index._value == 4 OR created_day_of_week_index._value == 5 %}
 #     <div style="background-color:lime">{{value}}</div>
 #     {% else %}
@@ -51,6 +45,16 @@ view: orders {
 #     {% else %}
 #     {{value}}
 #     {% endif %};;
+  }
+
+#   measure: max_date {
+#     type: date
+#     sql: max(${created_hahahah_date}) ;;
+#   }
+
+  dimension: max_date {
+    type: string
+    sql: max(${created_date}) OVER (PARTITION BY `users.id`);;
   }
 
   parameter: days_ago {
