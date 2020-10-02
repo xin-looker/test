@@ -206,6 +206,12 @@ view: users {
     tags: ["segment_group_id"]
   }
 
+  dimension: state2 {
+    type: string
+    sql: ${TABLE}.state ;;
+    tags: ["user_id"]
+  }
+
   dimension: zip {
     type: zipcode
     sql: ${TABLE}.zip ;;
