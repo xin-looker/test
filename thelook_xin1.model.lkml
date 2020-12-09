@@ -11,6 +11,10 @@ datagroup: thelook_xin1_default_datagroup {
   max_cache_age: "6 hour"
 }
 
+datagroup: api_trigger {
+  sql_trigger: select 1 ;;
+}
+
 case_sensitive: no
 
 access_grant: user_age {
@@ -133,3 +137,5 @@ explore: user_2 {}
 explore: users_nn {}
 
 explore: calendar_table {}
+
+explore: test_pdt {}
