@@ -3,6 +3,8 @@ connection: "thelook"
 # include all the views
 include: "*.view"
 include: "test.dashboard"
+include: "lookml_dashboard_extends.dashboard"
+include: "extend_lookml_dashboard.dashboard"
 
 datagroup: thelook_xin1_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
@@ -64,6 +66,7 @@ explore: inventory_items {
 }
 
 explore: order_items {
+  sql_always_where: {% condition order_items.order_items_id %}${order_items.id}{% endcondition %} ;;
   join: orders {
     type: left_outer
     sql_on: ${order_items.order_id} = ${orders.id} ;;
@@ -90,11 +93,6 @@ explore: order_items {
 }
 
 explore: orders {
-#   always_filter: {
-#     filters: {
-#       field: dynamic_date_param
-#     }
-#   }
   join: users {
     type: left_outer
     sql_on: ${orders.user_id} = ${users.id} ;;
@@ -114,17 +112,24 @@ explore: user_data {
   }
 }
 
-explore: users {
-
-  # join: fips {
-  #   relationship: many_to_one
-  #   sql_on: ${users.city}=${fips.name} ;;
-  # }
-  # join: user_2 {
-  #   fields: [user_2.count_distinct_30days_ago]
-  #   type: left_outer
-  #   sql_on: date_add(${user_2.created_date}, interval 30 day)=${users.created_date} ;;
-  # }
+explore: order_items_calendar_vieww {
+  view_name: order_items
+  join: orders {
+    type: left_outer
+    sql_on: ${order_items.order_id} = ${orders.id} ;;
+    relationship: many_to_one
+  }
+  join: calendar_table {
+    type: inner
+    sql_on: ${calendar_table.calendar_date}>=${orders.created_date} AND
+    ${calendar_table.calendar_date}<=${order_items.returned_date};;
+  }
 }
 
+explore: users {}
+
+explore: user_2 {}
+
 explore: users_nn {}
+
+explore: calendar_table {}

@@ -19,6 +19,10 @@ view: order_items {
     sql: ${TABLE}.order_id ;;
   }
 
+  filter: order_items_id {
+    type: string
+  }
+
   dimension_group: returned {
     type: time
     timeframes: [
@@ -30,7 +34,14 @@ view: order_items {
       quarter,
       year
     ]
-    sql: ${TABLE}.returned_at ;;
+    sql: date_add(${TABLE}.returned_at, interval 3 year) ;;
+    convert_tz: no
+  }
+
+  dimension: date {
+    type: string
+    sql: ${returned_date} ;;
+    suggest_persist_for: "0 seconds"
   }
 
   dimension: sale_price {

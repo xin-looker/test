@@ -32,12 +32,13 @@ view: orders {
 #       year
 #     ]
     sql: date_add(${TABLE}.created_at, interval 3 year) ;;
+    convert_tz: no
 #     html: {% if created_day_of_week_index._value == 4 OR created_day_of_week_index._value == 5 %}
 #     <div style="background-color:lime">{{value}}</div>
 #     {% else %}
 #     {{value}}
 #     {% endif %};;
-    drill_fields: []
+    # drill_fields: []
 #     html: {% assign order_date=value | %s %}
 #     {% assign user_date=users.created_date | %s %}
 #     {% if order_date > user_date %}
@@ -212,13 +213,13 @@ view: orders {
   dimension: status {
     type: string
     sql: ${TABLE}.status ;;
-    html: {% if value == "complete" %}
-      <div style="background-color: #123456">{{ value }}</div>
-    {% elsif value == "cancelled" %}
-      <div style="background-color:#654321">{{ value }}</div>
-    {% else %}
-      <div style="background-color: red">{{ value }}</div>
-    {% endif %};;
+    # html: {% if value == "complete" %}
+    #   <div style="background-color: #123456">{{ value }}</div>
+    # {% elsif value == "cancelled" %}
+    #   <div style="background-color:#654321">{{ value }}</div>
+    # {% else %}
+    #   <div style="background-color: red">{{ value }}</div>
+    # {% endif %};;
   }
 
   measure: count_status {
@@ -245,7 +246,7 @@ view: orders {
 
   measure: count {
     type: count
-    drill_fields: [id, users.first_name, users.last_name, users.this_field_does_not_exist, order_items.count]
+    # drill_fields: [id, users.first_name, users.last_name, users.this_field_does_not_exist, order_items.count]
   }
 
 

@@ -71,6 +71,27 @@ view: users {
     sql: ${age}>50 ;;
   }
 
+  dimension: test_liquid {
+    type: string
+    sql: {% if age_50 == false %}
+    'under 50'
+    {% else %}
+    'over 50'
+    {% endif %};;
+  }
+
+  # dimension: test_constant_array {
+  #   type: string
+  #   sql:
+  #   {% assign array=@{an_array2} | split: "," %}
+  #   '{{array[0]}}' ;;
+  # }
+
+  dimension: age_yesno {
+    type: number
+    sql: ${age_50} ;;
+  }
+
   dimension: yesno_icon {
     type: string
     sql: ${gender} ;;
@@ -119,7 +140,8 @@ view: users {
     type: string
     map_layer_name: countries
     sql: ${TABLE}.country ;;
-    html: <p style="background-color: red">{{value}}</p> ;;
+    # html: <p style="background-color: red">{{value}}</p> ;;
+    drill_fields: [state, city, gender, created_year, count]
   }
 
   dimension: country_2 {
@@ -206,6 +228,32 @@ view: users {
     tags: ["segment_group_id"]
   }
 
+  dimension: state_form {
+    type: string
+    sql: ${state} ;;
+    action: {
+      label: "test state form"
+      url: "https://test12345567788.com"
+      form_param: {
+        name: "state tags"
+        type: select
+        required: yes
+        option: {
+          name: "test1"
+          label: "test1"
+        }
+        option: {
+          name: "test2"
+          label: "test2"
+        }
+      }
+      user_attribute_param: {
+        user_attribute: first_name
+        name: "first_name_tag"
+      }
+    }
+  }
+
   dimension: state2 {
     type: string
     sql: ${TABLE}.state ;;
@@ -225,6 +273,13 @@ view: users {
   measure: count {
     type: count
     drill_fields: [detail*]
+    html:  <b>{{value}}</b>;;
+  }
+
+  measure: count2 {
+    type: count
+    drill_fields: [detail*]
+  }
 
 
 #     link: {
@@ -240,7 +295,7 @@ view: users {
 #       url: "{{link}}"
 #       label: "See the companies for the last available date"
 #     }
-  }
+
 
   measure: count_distinct {
     type: count_distinct
@@ -310,5 +365,21 @@ view: user_2 {
     type: count_distinct
     view_label: "Users"
     sql: ${id} ;;
+  }
+
+  parameter: attri {
+    type: string
+    # allowed_value: {
+    #   label: "first_name"
+    #   value: "first_name"
+    # }
+    # allowed_value: {
+    #   label: "last_name"
+    #   value: "last_name"
+    # }
+    allowed_value: {
+      label: "mid_name"
+      value: "mid_name"
+    }
   }
 }
