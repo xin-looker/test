@@ -299,9 +299,9 @@ view: users {
     html:
     {% for i in (1..5) %}
     {% if i > value %}
-    <span class="fa fa-star"></span>
+    ★
     {% else %}
-    <font color="orange"><span class="fa fa-star checked"></span></font>
+    <font color="orange">★</font>
     {% endif %}
     {% endfor %}
     ;;
