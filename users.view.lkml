@@ -1,5 +1,6 @@
 view: users {
   sql_table_name: demo_db.users;;
+  view_label: " "
 
   dimension: id {
     primary_key: yes
@@ -204,6 +205,7 @@ view: users {
   dimension: gender {
     type: string
     sql: ${TABLE}.gender ;;
+    html: {{value}} ;;
   }
 
   parameter: country_param {
@@ -281,6 +283,31 @@ view: users {
     drill_fields: [detail*]
   }
 
+  measure: state_list {
+    type: string
+    sql: group_concat(${state}) ;;
+    html:
+    {% assign state_list = value | split: "," %}
+    {% for state_elem in state_list %}
+    <p>{{state_elem}}</p>
+    {% endfor %};;
+  }
+
+  dimension: 5_stars{
+    type: number
+    sql: 1 ;;
+    html:
+    {% for i in (1..5) %}
+    {% if i > value %}
+    <span class="fa fa-star"></span>
+    {% else %}
+    <font color="orange"><span class="fa fa-star checked"></span></font>
+    {% endif %}
+    {% endfor %}
+    ;;
+
+    }
+
 
 #     link: {
 #       url: "{{link}}&f['derived_table_view_name.last_available_date']={{last_available_date._value}}"
@@ -299,7 +326,7 @@ view: users {
 
   measure: count_distinct {
     type: count_distinct
-    view_label: "Users"
+    # view_label: "Users"
     sql: ${id} ;;
   }
 
@@ -327,24 +354,6 @@ view: users {
     type: string
   }
 
-  dimension: circular_test {
-    type: string
-#     sql:  {% if state_f._is_filtered AND _filters['state_f'] == state._value %}
-#     ${state}
-#     when {% condition first_name_f %}${first_name}{% endcondition %}
-#     then ${last_name}
-#     else ${country}
-#     end;;
-
-   sql: case when false then 1 else 2 end
-  ;;
-  }
-
-#   measure: max_date {
-#     type: date
-#     sql: max(${created_date}) ;;
-#   }
-
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
@@ -355,31 +364,5 @@ view: users {
       orders.count,
       user_data.count
     ]
-  }
-}
-
-view: user_2 {
-  extends: [users]
-
-  measure: count_distinct_30days_ago {
-    type: count_distinct
-    view_label: "Users"
-    sql: ${id} ;;
-  }
-
-  parameter: attri {
-    type: string
-    # allowed_value: {
-    #   label: "first_name"
-    #   value: "first_name"
-    # }
-    # allowed_value: {
-    #   label: "last_name"
-    #   value: "last_name"
-    # }
-    allowed_value: {
-      label: "mid_name"
-      value: "mid_name"
-    }
   }
 }

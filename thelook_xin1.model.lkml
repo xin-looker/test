@@ -2,6 +2,7 @@ connection: "thelook"
 
 # include all the views
 include: "*.view"
+# include: "//thelook_xin/*.view"
 include: "test.dashboard"
 include: "lookml_dashboard_extends.dashboard"
 include: "extend_lookml_dashboard.dashboard"
@@ -97,6 +98,17 @@ explore: order_items {
 }
 
 explore: orders {
+  aggregate_table: rollup__created_month {
+    query: {
+      dimensions: [created_month]
+      measures: [count]
+      timezone: "America/Los_Angeles"
+    }
+
+    materialization: {
+      persist_for: "24 hours"
+    }
+  }
   join: users {
     type: left_outer
     sql_on: ${orders.user_id} = ${users.id} ;;
@@ -139,3 +151,5 @@ explore: users_nn {}
 explore: calendar_table {}
 
 explore: test_pdt {}
+
+explore: fips {}

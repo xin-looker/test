@@ -46,6 +46,13 @@ view: orders {
 #     {% else %}
 #     {{value}}
 #     {% endif %};;
+    drill_fields: []
+  }
+
+  dimension: year_dup {
+    type: date_year
+    sql: date_add(${TABLE}.created_at, interval 3 year) ;;
+    convert_tz: no
   }
 
 #   measure: max_date {
@@ -228,9 +235,11 @@ view: orders {
   }
 
   measure: avg {
-    type: number
-    sql: ${count}/${count_status} ;;
-    value_format_name: decimal_1
+    type: sum
+    label: "{% if _user_attributes['first_name']=='Xin' %} avg {% else %} awg {% endif %}"
+    # sql: ${count}/${count_status} ;;
+    sql: case when ${users.state}='California' then ${id}/12.345 else ${id}/12.234 end;;
+    value_format_name: decimal_0
   }
 
   dimension: user_id {
@@ -246,7 +255,18 @@ view: orders {
 
   measure: count {
     type: count
-    # drill_fields: [id, users.first_name, users.last_name, users.this_field_does_not_exist, order_items.count]
+    drill_fields: [id, users.first_name, users.last_name, users.this_field_does_not_exist, order_items.count]
+    link: {
+      label: "drill test"
+      url: "{{link}}"
+    }
+    value_format_name: decimal_0
+  }
+
+  measure: decimal_number {
+    type: number
+    sql: ${count}*.123 ;;
+    value_format_name: decimal_0
   }
 
 

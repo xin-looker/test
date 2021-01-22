@@ -42,6 +42,11 @@ view: products {
     sql: ${TABLE}.sku ;;
   }
 
+  measure: gender {
+    type: string
+    sql: group_concat(${users.gender}) ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [id, item_name, inventory_items.count]

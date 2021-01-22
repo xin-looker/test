@@ -4,7 +4,7 @@ project_name: "thelook_xin1"
 # # on this instance with include: statements
 #
 # local_dependency: {
-#   project: "name_of_other_project"
+#   project: "thelook_xin"
 # }
 
 constant: an_array {
