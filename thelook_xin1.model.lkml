@@ -142,9 +142,9 @@ explore: order_items_calendar_vieww {
   }
 }
 
-explore: users {}
-
-explore: user_2 {}
+explore: users {
+  sql_always_where: ${users.country}='{{_user_attributes['company']}}' ;;
+}
 
 explore: users_nn {}
 
