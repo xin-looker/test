@@ -174,8 +174,13 @@ view: orders {
     type: count
     filters: {
       field: created_month
-      value: "11 months ago for 1 months"
+      value: "1 months ago"
     }
+  }
+
+  measure: same_date_one_year_ago {
+    type: count
+    filters: [created_date: "1 year ago for 1 day"]
   }
 
   measure: this_week {

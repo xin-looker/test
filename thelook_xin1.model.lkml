@@ -143,7 +143,10 @@ explore: order_items_calendar_vieww {
 }
 
 explore: users {
-  sql_always_where: ${users.country} in '{{_user_attributes['company']}}' ;;
+  access_filter: {
+    field: country
+    user_attribute: company
+  }
 }
 
 explore: users_nn {}
