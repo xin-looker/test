@@ -22,16 +22,23 @@ view: orders {
 
   dimension_group: created {
     type: time
-#     timeframes: [
-#       raw,
-#       time,
-#       date,
-#       week,
-#       month,
-#       quarter,
-#       year
-#     ]
-    sql: date_add(${TABLE}.created_at, interval 3 year) ;;
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      day_of_month,
+      day_of_week,
+      day_of_week_index,
+      fiscal_month_num,
+      fiscal_quarter,
+      fiscal_quarter_of_year,
+      fiscal_year
+    ]
+    sql: date_add(${TABLE}.created_at, interval 3 years) ;;
     convert_tz: no
 #     html: {% if created_day_of_week_index._value == 4 OR created_day_of_week_index._value == 5 %}
 #     <div style="background-color:lime">{{value}}</div>
@@ -260,10 +267,18 @@ view: orders {
 
   measure: count {
     type: count
-    drill_fields: [id, users.first_name, users.last_name, users.this_field_does_not_exist, order_items.count]
+    # drill_fields: [id, users.first_name, users.last_name, users.this_field_does_not_exist, order_items.count]
     link: {
-      label: "drill test"
-      url: "{{link}}"
+      label: "relative link"
+      url: "../dashboards/821jJUH9IAz1YdlE4z229I"
+    }
+    link: {
+      label: "absolute link"
+      url: "https://dcleu.eu.looker.com/dashboards/821jJUH9IAz1YdlE4z229I"
+    }
+    link: {
+      label: "external link"
+      url: "www.google.ie"
     }
     value_format_name: decimal_0
   }
@@ -330,6 +345,150 @@ view: orders {
 
 
   ##############################################################
+
+
+
+
+  #period over period#
+
+  filter: current_date_range {
+    type: date
+    view_label: "_PoP"
+    label: "1. Current Date Range"
+    description: "Select the current date range you are interested in. Make sure any other filter on Event Date covers this period, or is removed."
+  }
+
+  dimension: period_2_start {
+    # hidden:  yes
+    view_label: "_PoP"
+    description: "Calculates the start of the previous period"
+    type: date
+    sql: DATE_ADD({% date_start current_date_range %}, interval -1 month);;
+    convert_tz: no
+  }
+
+  dimension: period_2_end {
+    # hidden:  yes
+    view_label: "_PoP"
+    description: "Calculates the end of the previous period"
+    type: date
+    sql: DATE_ADD({% date_end current_date_range %}, interval -1 month);;
+  }
+
+  dimension: day_in_period {
+    # hidden: yes
+    description: "Gives the number of days since the start of each period. Use this to align the event dates onto the same axis, the axes will read 1,2,3, etc."
+    type: number
+    sql:
+    {% if current_date_range._is_filtered %}
+        CASE
+        WHEN {% condition current_date_range %} ${created_raw} {% endcondition %}
+        THEN TIMESTAMPDIFF(DAY, DATE({% date_start current_date_range %}), ${created_date}) + 1
+        WHEN ${created_date} between ${period_2_start} and ${period_2_end}
+        THEN TIMESTAMPDIFF(DAY, ${period_2_start}, ${created_date}) + 1
+        END
+    {% else %} NULL
+    {% endif %}
+    ;;
+  }
+
+  dimension: order_for_period {
+    hidden: yes
+    type: number
+    sql:
+        {% if current_date_range._is_filtered %}
+            CASE
+            WHEN {% condition current_date_range %} ${created_raw} {% endcondition %}
+            THEN 1
+            WHEN ${created_date} between ${period_2_start} and ${period_2_end}
+            THEN 2
+            END
+        {% else %}
+            NULL
+        {% endif %}
+        ;;
+  }
+
+  dimension_group: date_in_period {
+    description: "Use this as your grouping dimension when comparing periods. Aligns the previous periods onto the current period"
+    label: "Current Period"
+    type: time
+    sql: DATE_ADD(DATE({% date_start current_date_range %}, interval ${day_in_period} - 1 DAY )) ;;
+    view_label: "_PoP"
+    timeframes: [
+      date,
+      hour_of_day,
+      day_of_week,
+      day_of_week_index,
+      day_of_month,
+      day_of_year,
+      week_of_year,
+      month,
+      month_name,
+      month_num,
+      year]
+  }
+
+  dimension: period {
+    view_label: "_PoP"
+    label: "Period"
+    description: "Pivot me! Returns the period the metric covers, i.e. either the 'This Period' or 'Previous Period'"
+    type: string
+    order_by_field: order_for_period
+    sql:
+        {% if current_date_range._is_filtered %}
+            CASE
+            WHEN {% condition current_date_range %} ${created_raw} {% endcondition %}
+            THEN 'This {% parameter compare_to %}'
+            WHEN ${created_date} between ${period_2_start} and ${period_2_end}
+            THEN 'Last {% parameter compare_to %}'
+            END
+        {% else %}
+            NULL
+        {% endif %}
+        ;;
+  }
+
+## ---------------------- TO CREATE FILTERED MEASURES ---------------------------- ##
+
+  dimension: period_filtered_measures {
+    hidden: yes
+    description: "We just use this for the filtered measures"
+    type: string
+    sql:
+        {% if current_date_range._is_filtered %}
+            CASE
+            WHEN {% condition current_date_range %} ${created_raw} {% endcondition %} THEN 'this'
+            WHEN ${created_date} between ${period_2_start} and ${period_2_end} THEN 'last' END
+        {% else %} NULL {% endif %} ;;
+  }
+
+# Filtered measures
+
+  measure: current_period_count {
+    view_label: "_PoP"
+    type: count
+    filters: [period_filtered_measures: "this"]
+  }
+
+  measure: previous_period_count {
+    view_label: "_PoP"
+    type: count
+    filters: [period_filtered_measures: "last"]
+  }
+
+  measure: sales_pop_change {
+    view_label: "_PoP"
+    label: "Total Sales period-over-period % change"
+    type: number
+    sql: CASE WHEN ${current_period_count} = 0
+            THEN NULL
+            ELSE (1.0 * ${current_period_count} / NULLIF(${previous_period_count} ,0)) - 1 END ;;
+    value_format_name: percent_2
+  }
+
+
+
 
 
 }

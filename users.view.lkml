@@ -1,6 +1,6 @@
 view: users {
   sql_table_name: demo_db.users;;
-  view_label: " "
+  # view_label: " "
 
   dimension: id {
     primary_key: yes
@@ -230,6 +230,11 @@ view: users {
     tags: ["segment_group_id"]
   }
 
+  dimension: state_substring {
+    type: string
+    sql: substr(${state}, 1, 5) ;;
+  }
+
   dimension: state_form {
     type: string
     sql: ${state} ;;
@@ -280,6 +285,7 @@ view: users {
 
   measure: count2 {
     type: count
+    label: "_filters['users.gender']"
     drill_fields: [detail*]
   }
 

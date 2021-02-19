@@ -7,6 +7,8 @@ include: "test.dashboard"
 include: "lookml_dashboard_extends.dashboard"
 include: "extend_lookml_dashboard.dashboard"
 
+fiscal_month_offset: 1
+
 datagroup: thelook_xin1_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
   max_cache_age: "6 hour"
@@ -19,8 +21,8 @@ datagroup: api_trigger {
 case_sensitive: no
 
 access_grant: user_age {
-  allowed_values: ["abc"]
-  user_attribute: advanced_string
+  allowed_values: ["xin.bao@looker.com"]
+  user_attribute: email
 }
 
 map_layer: us_counties {
@@ -148,6 +150,16 @@ explore: users {
     user_attribute: company
   }
 }
+
+explore: users123 {
+  from: users
+  access_filter: {
+    field: country
+    user_attribute: company
+  }
+  required_access_grants: [user_age]
+}
+
 
 explore: users_nn {}
 
