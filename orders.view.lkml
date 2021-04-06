@@ -1,13 +1,22 @@
 view: orders {
   sql_table_name: (select * from demo_db.orders) ;;
 
-  dimension: id {
+  dimension: order_id {
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
 
   dimension: test {
+    type: string
+    sql: "a" ;;
+    html: {{_user_attributes['advanced_string']}} ;;
+    suggest_explore: covid_combined
+    suggest_dimension: covid_combined.country
+
+  }
+
+  dimension: test2 {
     type: string
     sql: "a" ;;
     html: {{_user_attributes['advanced_string']}} ;;
@@ -38,7 +47,7 @@ view: orders {
       fiscal_quarter_of_year,
       fiscal_year
     ]
-    sql: date_add(${TABLE}.created_at, interval 3 years) ;;
+    sql: date_add(${TABLE}.created_at, interval 3 year) ;;
     convert_tz: no
 #     html: {% if created_day_of_week_index._value == 4 OR created_day_of_week_index._value == 5 %}
 #     <div style="background-color:lime">{{value}}</div>
@@ -67,10 +76,10 @@ view: orders {
 #     sql: max(${created_hahahah_date}) ;;
 #   }
 
-  dimension: max_date {
-    type: string
-    sql: max(${created_date}) OVER (PARTITION BY `users.id`);;
-  }
+  # dimension: max_date {
+  #   type: string
+  #   sql: max(${created_date}) OVER (PARTITION BY `users.id`);;
+  # }
 
   parameter: days_ago {
     type: number
@@ -110,17 +119,6 @@ view: orders {
 
   filter: date_temp {
     type: date
-  }
-
-  dimension_group: duration_year {
-    type: duration
-    sql_start: ${users.created_date} ;;
-    sql_end: ${created_date} ;;
-  }
-
-  dimension: duration_year_number {
-    type: number
-    sql: ${years_duration_year} ;;
   }
 
   parameter: dynamic_date_param {
@@ -246,14 +244,6 @@ view: orders {
     sql: count(distinct ${status}) ;;
   }
 
-  measure: avg {
-    type: sum
-    label: "{% if _user_attributes['first_name']=='Xin' %} avg {% else %} awg {% endif %}"
-    # sql: ${count}/${count_status} ;;
-    sql: case when ${users.state}='California' then ${id}/12.345 else ${id}/12.234 end;;
-    value_format_name: decimal_0
-  }
-
   dimension: user_id {
     type: number
     # hidden: yes
@@ -281,6 +271,12 @@ view: orders {
       url: "www.google.ie"
     }
     value_format_name: decimal_0
+  }
+
+  measure: count_plus {
+    type: number
+    sql: ${count}+800 ;;
+    html: {{count._rendered_value}} ;;
   }
 
   measure: decimal_number {

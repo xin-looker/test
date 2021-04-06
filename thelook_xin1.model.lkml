@@ -4,10 +4,16 @@ connection: "thelook"
 include: "*.view"
 # include: "//thelook_xin/*.view"
 include: "test.dashboard"
-include: "lookml_dashboard_extends.dashboard"
-include: "extend_lookml_dashboard.dashboard"
 
 fiscal_month_offset: 1
+
+
+named_value_format: std_eur {
+  value_format: "#,##0.00 [$€-x-euro1]"
+}
+named_value_format: std_usd {
+  value_format: "[$$-es-UY] #,##0.00"
+}
 
 datagroup: thelook_xin1_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
@@ -73,10 +79,21 @@ explore: inventory_items {
 }
 
 explore: order_items {
-  sql_always_where: {% condition order_items.order_items_id %}${order_items.id}{% endcondition %} ;;
+  # sql_always_where: {% condition order_items.order_items_id %}${order_items.id}{% endcondition %} ;;
+  aggregate_table: rollup__created_month {
+    query: {
+      dimensions: [users.state, orders.created_month]
+      measures: [count]
+      timezone: "UTC"
+    }
+
+    materialization: {
+      persist_for: "24 hours"
+    }
+  }
   join: orders {
     type: left_outer
-    sql_on: ${order_items.order_id} = ${orders.id} ;;
+    sql_on: ${order_items.order_id} = ${orders.order_id} ;;
     relationship: many_to_one
   }
 
@@ -100,11 +117,12 @@ explore: order_items {
 }
 
 explore: orders {
+  group_label: "1.General"
   aggregate_table: rollup__created_month {
     query: {
-      dimensions: [created_month]
+      dimensions: [users.state, orders.created_month]
       measures: [count]
-      timezone: "America/Los_Angeles"
+      timezone: "UTC"
     }
 
     materialization: {
@@ -134,21 +152,22 @@ explore: order_items_calendar_vieww {
   view_name: order_items
   join: orders {
     type: left_outer
-    sql_on: ${order_items.order_id} = ${orders.id} ;;
+    sql_on: ${order_items.order_id} = ${orders.order_id} ;;
     relationship: many_to_one
   }
   join: calendar_table {
     type: inner
+    relationship: one_to_one
     sql_on: ${calendar_table.calendar_date}>=${orders.created_date} AND
     ${calendar_table.calendar_date}<=${order_items.returned_date};;
   }
 }
 
 explore: users {
-  access_filter: {
-    field: country
-    user_attribute: company
-  }
+  # access_filter: {
+  #   field: country
+  #   user_attribute: company
+  # }
 }
 
 explore: users123 {
@@ -164,7 +183,5 @@ explore: users123 {
 explore: users_nn {}
 
 explore: calendar_table {}
-
-explore: test_pdt {}
 
 explore: fips {}

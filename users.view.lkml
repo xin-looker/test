@@ -1,11 +1,16 @@
 view: users {
   sql_table_name: demo_db.users;;
-  # view_label: " "
 
   dimension: id {
     primary_key: yes
     type: number
-    sql: ${TABLE}.id ;;
+    sql:
+    {% if attri._parameter_value == 'first_name' %}
+    ${TABLE}.id
+    {% else %}
+    ${TABLE}.id
+    {% endif %}
+    ;;
   }
 
   filter: date_filter {
@@ -13,7 +18,7 @@ view: users {
   }
 
   parameter: attri {
-    type: string
+    type: unquoted
     allowed_value: {
       label: "first_name"
       value: "first_name"
@@ -22,6 +27,12 @@ view: users {
       label: "last_name"
       value: "last_name"
     }
+    default_value: "last_name"
+  }
+
+  dimension: test_3 {
+    type: string
+    sql: case when ${gender}='m' then '-f' else '-m' end;;
   }
 
   dimension: max_user_created_date {
@@ -213,12 +224,6 @@ view: users {
     suggest_dimension: state
   }
 
-  dimension: is_m {
-    type: yesno
-    label: "Attribute - {{_filters['users.state']}}"
-    sql: ${gender}='m' ;;
-  }
-
   dimension: last_name {
     type: string
     sql: ${TABLE}.last_name ;;
@@ -280,7 +285,10 @@ view: users {
   measure: count {
     type: count
     drill_fields: [detail*]
-    html:  <b>{{value}}</b>;;
+    link: {
+      url: "{{link}}&sorts=users.last_name+desc"
+      label: "Column Sorted Drill link"
+    }
   }
 
   measure: count2 {
@@ -358,6 +366,24 @@ view: users {
 
   filter: first_name_f {
     type: string
+  }
+
+  measure: colored_count {
+    type: count
+    link: {
+      url: "www.google.ie"
+      label: "this is a label"
+    }
+    html: {% if value > 100 %}
+    <font color='red'>{{ rendered_value }}</p>
+    {% else %}
+    {{rendered_value}}
+    {% endif %};;
+  }
+
+  measure: test_yesno {
+    type: yesno
+    sql: ${count}>50 AND ${gender}="m" ;;
   }
 
   # ----- Sets of fields for drilling ------
