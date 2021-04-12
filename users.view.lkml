@@ -4,13 +4,7 @@ view: users {
   dimension: id {
     primary_key: yes
     type: number
-    sql:
-    {% if attri._parameter_value == 'first_name' %}
-    ${TABLE}.id
-    {% else %}
-    ${TABLE}.id
-    {% endif %}
-    ;;
+    sql:${TABLE}.id;;
   }
 
   filter: date_filter {
@@ -291,6 +285,16 @@ view: users {
     }
   }
 
+  measure: count_ny {
+    type: count
+    filters: [state: "California, Texas"]
+  }
+
+  measure: accounting {
+    type: number
+    sql: case when ${state}="North Carolina" then ${count_ny} else ${count} end  ;;
+  }
+
   measure: count2 {
     type: count
     label: "_filters['users.gender']"
@@ -379,6 +383,12 @@ view: users {
     {% else %}
     {{rendered_value}}
     {% endif %};;
+  }
+
+  measure: time_number {
+    type: number
+    sql: ${count}*750000/3600/24 ;;
+    value_format: "DD HH:MM:SS"
   }
 
   measure: test_yesno {
