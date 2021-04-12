@@ -65,8 +65,9 @@ view: users {
     label: "user_age"
 #     required_access_grants: [user_age]
     sql: ${TABLE}.age ;;
-    html: <video width="560" height="315" controls="controls" class="video-stream" x-webkit-airplay="allow" src="https://www.youtube.com/jFeBaV2hFb4">
-</video> ;;
+#     html: <video width="560" height="315" controls="controls" class="video-stream" x-webkit-airplay="allow" src="https://www.youtube.com/jFeBaV2hFb4">
+# </video> ;;
+    required_access_grants: [user_age]
     # html: <iframe width="420" height="315"
     # src="https://www.youtube.com/embed/tgbNymZ7vqY?autoplay=1&mute=1">
     # </iframe> ;;
